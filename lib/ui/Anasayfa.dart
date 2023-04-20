@@ -2,6 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:guvenligecis/ui/Duyurular.dart';
 import 'package:guvenligecis/ui/Devamsizlik.dart';
+import 'package:guvenligecis/ui/tabMenu/KisiselBilgiler.dart';
+import 'package:guvenligecis/ui/tabMenu/Mesaj.dart';
+import 'DersNotlari.dart';
+import 'tabMenu/Iletisim.dart';
 
 
 class Anasayfa extends StatefulWidget {
@@ -9,22 +13,65 @@ class Anasayfa extends StatefulWidget {
   AnasayfaState createState() {
     return new AnasayfaState();
   }
+  const Anasayfa({Key? key}) : super(key: key);
+
 }
 
 class AnasayfaState extends State<Anasayfa>
 {
 
+  final menuItemlist = const <MenuItem>[
+    MenuItem(Icons.home, ''),
+    MenuItem(Icons.person, ''),
+    MenuItem(Icons.phone, ''),
+    MenuItem(Icons.message, ''),
+
+  ];
+
+   int index = 0;
+   final _buildBody = const <Widget> [Anasayfa(),KisiselBilgiler(),Iletisim(),Mesaj()];
+
+
    BottomNavigationBar get buildNavigationBar {
      return BottomNavigationBar(
-         type: BottomNavigationBarType.fixed,
+
+
+       type: BottomNavigationBarType.shifting,
+       currentIndex: index,
+       onTap: (x) {
+         setState(() {
+           index = x;
+         });
+       },
+       elevation: 16.0,
+       showUnselectedLabels: true,
+       unselectedItemColor: Colors.white54,
+       selectedItemColor: Colors.white,
+       items: menuItemlist
+           .map((MenuItem menuItem) => BottomNavigationBarItem(
          backgroundColor: Colors.blue,
+         icon: Icon(menuItem.iconData),
+         label: menuItem.text,
+       ))
+           .toList(),
+
+         /*type: BottomNavigationBarType.fixed,
+    //     unselectedItemColor: Colors.green,
+         selectedItemColor: Colors.yellow,
+         backgroundColor: Colors.blue,
+         currentIndex: index,
+         onTap:(x){
+           setState(() {
+             index = x;
+           });
+         },
          items: [
        BottomNavigationBarItem(icon: Icon(Icons.menu),label:"Menu"),
        BottomNavigationBarItem(icon: Icon(Icons.supervised_user_circle),label:"Kişisel Bilgiler"),
        BottomNavigationBarItem(icon: Icon(Icons.phone),label:"İletişim"),
-       BottomNavigationBarItem(icon: Icon(Icons.message),label:"Bize yazın"),
+       BottomNavigationBarItem(icon: Icon(Icons.message),label:"Bize yazın"),*/
 
-     ]);
+     );
    }
  List<Baslik> menu = [
     Baslik("Duyurular", "assets/images/guvenligecis.png"),
@@ -42,6 +89,7 @@ class AnasayfaState extends State<Anasayfa>
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +99,7 @@ class AnasayfaState extends State<Anasayfa>
         ),
           bottomNavigationBar: buildNavigationBar,
 
-        body: Center(
+         body:Center(
 
           child: GridView.count(
             crossAxisCount: 2,
@@ -61,7 +109,7 @@ class AnasayfaState extends State<Anasayfa>
               child: InkWell(
 
                 onTap: () {
-                      AppNavigator.onGenerateRoute(poke.title);
+                      AppNavigator.onGenerateRoute(poke.title,context);
                 },
 
 
@@ -104,6 +152,11 @@ class AnasayfaState extends State<Anasayfa>
   }
 
 }
+class MenuItem {
+  const MenuItem(this.iconData, this.text);
+  final IconData iconData;
+  final String text;
+}
 class Baslik{
 
   String title;
@@ -113,18 +166,23 @@ class Baslik{
 }
 class AppNavigator {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey();
- static Route onGenerateRoute(String settings) {
+ static Object onGenerateRoute(String settings,BuildContext context) {
    switch (settings) {
      case "Duyurular" :
        return MaterialPageRoute(builder: (_) => duyurular());
        break;
 
      case "Devamsızlık":
-       return MaterialPageRoute(builder: (_) => devamsizlik());
-       break;
+       return   Navigator.push(
+           context,
+           MaterialPageRoute(
+               builder: (context) => devamsizlik()));
 
-     case "":
-       return MaterialPageRoute(builder: (_) => duyurular());
+     case "Ders Notları":
+       return   Navigator.push(
+           context,
+           MaterialPageRoute(
+               builder: (context) => DersNotlari()));
        break;
      default:
        return MaterialPageRoute(builder: (_) => duyurular());
